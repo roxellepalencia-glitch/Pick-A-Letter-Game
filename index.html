@@ -54,7 +54,7 @@ input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid #475569;b
 <div class="card">
 <div class="row" style="justify-content:space-between"><span class="status">PLAYER</span><strong>Game: <span id="playerCode"></span></strong></div>
 <h1 style="font-size:2.5rem">Pick A Letter!</h1><div id="playerWelcome" class="center"></div>
-<div id="teamPick"><h2 class="center">Choose your team</h2><div class="team-buttons"><button class="team1" data-team="1">🔵 TEAM 1</button><button class="team2" data-team="2">🔴 TEAM 2</button></div></div>
+<div id="teamPick" class="hidden"></div>
 <div id="playerWaiting" class="hidden center"><div class="notice">You're in! 🎉 Choose letters and submit your team's answers here.</div><div id="playerBoard" class="board"></div><div id="playerRound"></div></div>
 </div>
 </div>
@@ -95,8 +95,9 @@ function addScore(team){state.scores[team]+=5;state.current=null;Object.values(p
 function startHostTimer(){clearInterval(window.t);const tick=()=>{if(!state.current){clearInterval(window.t);return}const n=Math.max(0,60-Math.floor((Date.now()-state.current.startedAt)/1000));$('timer').textContent=n||'TIME!';$('timer').classList.toggle('warning',n<=10);if(n<=0){clearInterval(window.t);$('startTimer').disabled=true}};tick();window.t=setInterval(tick,500)}
 function startTimer(){startHostTimer()}
 $('hostBtn').onclick=()=>{role='host';code=makeCode();state={scores:{1:0,2:0},used:[],current:null,started:false,board:shuffleLetters()};show('host');$('hostCode').textContent=code;joinChannel(code);renderPlayers()}
-$('joinBtn').onclick=()=>{const c=$('joinCode').value.trim().toUpperCase(),n=$('playerName').value.trim();if(c.length<4||!n){$('homeMsg').innerHTML='<div class="notice danger">Enter a game code and your name.</div>';return}role='player';player={id:crypto.randomUUID(),name:n,team:null};show('player');$('playerCode').textContent=c;$('playerWelcome').textContent='Welcome, '+n+'!';joinChannel(c)}
-document.querySelectorAll('[data-team]').forEach(b=>b.onclick=()=>{player.team=Number(b.dataset.team);$('teamPick').classList.add('hidden');$('playerWaiting').classList.remove('hidden');renderPlayerState();broadcast('player_join',{id:player.id,player});broadcast('player_team',{id:player.id,team:player.team})})
+$('joinBtn').onclick=()=>{const c=$('joinCode').value.trim().toUpperCase(),n=$('playerName').value.trim();if(c.length<4||!n){$('homeMsg').innerHTML='<div class="notice danger">Enter a game code and your name.</div>';return}role='player';player={id:crypto.randomUUID(),name:n,team:null};show('player');$('playerCode').textContent=c;$('playerWelcome').textContent='Welcome, '+n+'!';joinChannel(c);setTimeout(assignTeam,700)}
+function assignTeam(){const counts=Object.values(players).reduce((a,p)=>{if(p.team===1)a[1]++;if(p.team===2)a[2]++;return a},{1:0,2:0});player.team=counts[1]<=counts[2]?1:2;players[player.id]=player;$('teamPick').classList.add('hidden');$('playerWaiting').classList.remove('hidden');renderPlayerState();broadcast('player_join',{id:player.id,player});}
+
 $('startBtn').onclick=()=>{state.started=true;$('hostSetup').classList.add('hidden');$('hostGame').classList.remove('hidden');broadcast('state',{state,players});renderHostGame()}
 $('revealBtn').onclick=()=>$('guide').classList.toggle('hidden');
 $('startTimer').onclick=startTimer;
