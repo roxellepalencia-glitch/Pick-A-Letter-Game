@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pick A Letter! — Team Challenge</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#0f172a;color:#fff;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+.wrap{max-width:1100px;margin:auto;padding:28px 20px}.card{background:#1e293b;border:1px solid #334155;border-radius:24px;padding:28px;box-shadow:0 20px 50px #0003}
+h1{font-size:clamp(2.3rem,6vw,4.5rem);margin:0 0 8px;text-align:center}.subtitle{text-align:center;color:#cbd5e1;margin:0 0 28px}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.btn{padding:15px 22px;border-radius:14px;font-weight:800;font-size:1rem}.primary{background:#38bdf8;color:#082f49}.secondary{background:#475569;color:#fff}.team1{background:#2563eb}.team2{background:#dc2626}
+input{width:100%;padding:14px 16px;border-radius:12px;border:1px solid #475569;background:#0f172a;color:#fff;margin:7px 0 14px;outline:none}label{font-size:.9rem;color:#cbd5e1}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.center{text-align:center}.status{padding:10px 14px;border-radius:999px;background:#334155;color:#e2e8f0;font-weight:700;display:inline-block}
+.scores{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;margin-bottom:20px}.score{padding:18px;border-radius:18px;text-align:center;font-weight:900;font-size:1.2rem}.score b{display:block;font-size:2.5rem;margin-top:3px}.blue{background:#1d4ed8}.red{background:#b91c1c}.vs{font-weight:900;color:#94a3b8}
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:20px 0}.letter{aspect-ratio:1/1;border-radius:16px;background:#334155;color:#fff;font-size:clamp(1.2rem,4vw,2rem);font-weight:1000;box-shadow:inset 0 -5px #1e293b;transition:.15s}.letter:hover:not(:disabled){transform:translateY(-3px);background:#475569}.letter.used{background:#111827;color:#475569;box-shadow:none}.letter.revealed{background:#f59e0b;color:#451a03}.letter:disabled{cursor:not-allowed}
+.question{background:#f8fafc;color:#0f172a;border-radius:20px;padding:28px;text-align:center;margin:20px 0}.bigletter{font-size:5rem;font-weight:1000;color:#2563eb;line-height:1}.question h2{font-size:clamp(1.4rem,3vw,2.2rem);margin:12px 0}.difficulty{font-weight:900;letter-spacing:.08em}
+.timer{font-size:3.5rem;font-weight:1000;margin:10px}.timer.warning{color:#dc2626}.answer-guide{background:#0f172a;border:1px dashed #64748b;padding:15px;border-radius:14px;text-align:left}.answer-guide summary{cursor:pointer;font-weight:800}.answer-list{color:#cbd5e1;margin-top:10px;line-height:1.7}
+.team-buttons{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}.team-buttons button{color:#fff;padding:18px;border-radius:14px;font-weight:900}.players{display:grid;grid-template-columns:1fr 1fr;gap:14px}.player-list{background:#0f172a;padding:15px;border-radius:14px;min-height:70px}.player-list h3{margin:0 0 10px}.player{padding:6px 0;color:#cbd5e1}
+.notice{padding:13px 15px;border-radius:12px;background:#0c4a6e;color:#bae6fd;margin:12px 0}.success{background:#14532d;color:#bbf7d0}.danger{background:#7f1d1d;color:#fecaca}
+@media(max-width:700px){.home-grid,.players{grid-template-columns:1fr}.board{grid-template-columns:repeat(5,1fr)}.scores{grid-template-columns:1fr 1fr}.vs{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div id="home" class="card">
+<h1>🔤 Pick A Letter!</h1><p class="subtitle">A fast-paced team challenge — think fast, work together!</p>
+<div class="home-grid">
+<div class="card" style="padding:22px"><h2>🎤 Host a Game</h2><p>Control the board, timer and scoring.</p><button class="btn primary" id="hostBtn">Create Game</button></div>
+<div class="card" style="padding:22px"><h2>📱 Join a Game</h2><label>Game Code</label><input id="joinCode" maxlength="6" placeholder="ABC123"><label>Your Name</label><input id="playerName" maxlength="24" placeholder="Your name"><button class="btn secondary" id="joinBtn">Join Game</button></div>
+</div>
+<div id="homeMsg"></div>
+</div>
+
+<div id="host" class="hidden">
+<div class="card">
+<div class="row" style="justify-content:space-between"><div><span class="status">HOST</span> <strong>Game Code: <span id="hostCode"></span></strong></div><button class="btn secondary" id="resetBtn">New Game</button></div>
+<div class="scores"><div class="score blue">🔵 TEAM 1<b id="s1">0</b></div><div class="vs">VS</div><div class="score red">🔴 TEAM 2<b id="s2">0</b></div></div>
+<div id="hostNotice" class="notice">Waiting for players. Share the game code with everyone.</div>
+<div id="hostSetup"><h2>👥 Players</h2><div class="players"><div class="player-list"><h3>🔵 Team 1</h3><div id="p1">No players yet.</div></div><div class="player-list"><h3>🔴 Team 2</h3><div id="p2">No players yet.</div></div></div><p class="center"><button class="btn primary" id="startBtn">Start Game</button></p></div>
+<div id="hostGame" class="hidden">
+<div class="center"><div class="status" id="turnStatus">Choose a letter for the team.</div></div>
+<div id="board" class="board"></div>
+<div id="round" class="hidden">
+<div class="question"><div class="bigletter" id="roundLetter">A</div><div class="difficulty" id="roundDifficulty"></div><h2 id="roundQuestion"></h2><div class="timer" id="timer">30</div><div class="row" style="justify-content:center"><button class="btn primary" id="startTimer">▶ Start 30s Timer</button><button class="btn secondary" id="revealBtn">Show Answer Guide</button><button class="btn team1" id="score1">🔵 Team 1 +5</button><button class="btn team2" id="score2">🔴 Team 2 +5</button></div></div>
+<div id="guide" class="answer-guide hidden"><strong>Host Answer Guide</strong><div class="answer-list" id="answerList"></div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="player" class="hidden">
+<div class="card">
+<div class="row" style="justify-content:space-between"><span class="status">PLAYER</span><strong>Game: <span id="playerCode"></span></strong></div>
+<h1 style="font-size:2.5rem">Pick A Letter!</h1><div id="playerWelcome" class="center"></div>
+<div id="teamPick"><h2 class="center">Choose your team</h2><div class="team-buttons"><button class="team1" data-team="1">🔵 TEAM 1</button><button class="team2" data-team="2">🔴 TEAM 2</button></div></div>
+<div id="playerWaiting" class="hidden center"><div class="notice">You're in! 🎉 Watch the host screen for the questions and work with your team.</div><div id="playerRound"></div></div>
+</div>
+</div>
+</div>
+
+<script src="questions.js"></script>
+<script>
+const SUPABASE_URL='https://yndwherreppivfoaztyw.supabase.co';
+const SUPABASE_KEY='sb_publishable_dE2W1YoTYFs7cr3aPUP_7A__8j1qNoO';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let channel=null, role=null, code='', player=null, players={}, state={scores:{1:0,2:0},used:[],current:null,started:false};
+
+const $=id=>document.getElementById(id);
+const letters='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+function makeCode(){return Math.random().toString(36).slice(2,8).toUpperCase()}
+function show(id){['home','host','player'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
+function broadcast(type,payload={}){channel?.send({type:'broadcast',event:type,payload})}
+function joinChannel(c){code=c;channel=sb.channel('pick-a-letter-'+c,{config:{broadcast:{self:true},presence:{key:role==='host'?'host':player.id}}});channel.on('broadcast',{event:'hello'},()=>{if(role==='host')broadcast('state',{state,players})}).on('broadcast',{event:'state'},m=>{if(role==='player'){state=m.payload.state;players=m.payload.players||{};renderPlayerState()}}).on('broadcast',{event:'player_join'},m=>{if(role==='host'){players[m.payload.id]=m.payload.player;renderPlayers();broadcast('state',{state,players})}}).on('broadcast',{event:'player_team'},m=>{if(role==='host'&&players[m.payload.id]){players[m.payload.id].team=m.payload.team;renderPlayers();broadcast('state',{state,players})}}).on('broadcast',{event:'reset'},()=>location.reload()).subscribe(status=>{if(status==='SUBSCRIBED'){if(role==='player')broadcast('hello');}});
+}
+function renderPlayers(){const a=Object.values(players).filter(p=>p.team===1),b=Object.values(players).filter(p=>p.team===2);$('p1').innerHTML=a.length?a.map(p=>'<div class="player">👤 '+esc(p.name)+'</div>').join(''):'No players yet.';$('p2').innerHTML=b.length?b.map(p=>'<div class="player">👤 '+esc(p.name)+'</div>').join(''):'No players yet.'}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function renderBoard(){ $('board').innerHTML=letters.map(l=>{let u=state.used.includes(l);return '<button class="letter '+(u?'used':'')+'" '+(u?'disabled':'')+' onclick="pickLetter(\''+l+'\')">'+(u?'✓':l)+'</button>'}).join('')}
+window.pickLetter=function(l){if(!role==='host'||state.used.includes(l)||state.current)return;const q=QUESTIONS[l];state.used.push(l);state.current={letter:l,question:q};renderHostGame();broadcast('state',{state,players})}
+function renderHostGame(){$('s1').textContent=state.scores[1];$('s2').textContent=state.scores[2];renderBoard();if(state.current){$('round').classList.remove('hidden');$('roundLetter').textContent=state.current.letter;$('roundDifficulty').textContent=state.current.question.difficulty.toUpperCase();$('roundQuestion').textContent=state.current.question.prompt;$('answerList').textContent=state.current.question.answers.join(' • ');$('turnStatus').textContent='Current letter: '+state.current.letter+' — 5 points';}else{$('round').classList.add('hidden');$('turnStatus').textContent='Choose a letter for the next challenge.'}}
+function renderPlayerState(){ $('playerCode').textContent=code;if(state.current){$('playerRound').innerHTML='<div class="question"><div class="bigletter">'+state.current.letter+'</div><h2>'+esc(state.current.question.prompt)+'</h2><div class="notice">🗣️ Work together! Give your team at least 5 valid answers before time runs out.</div></div>'}else $('playerRound').innerHTML='<div class="notice">Waiting for the host to choose a letter…</div>'}
+function addScore(team){state.scores[team]+=5;state.current=null;$('guide').classList.add('hidden');broadcast('state',{state,players});renderHostGame()}
+function startTimer(){let n=30;$('timer').textContent=n;$('startTimer').disabled=true;clearInterval(window.t);window.t=setInterval(()=>{n--;$('timer').textContent=n;$('timer').classList.toggle('warning',n<=10);if(n<=0){clearInterval(window.t);$('timer').textContent='TIME!';$('startTimer').disabled=false;broadcast('state',{state,players})}},1000)}
+$('hostBtn').onclick=()=>{role='host';code=makeCode();state={scores:{1:0,2:0},used:[],current:null,started:false};show('host');$('hostCode').textContent=code;joinChannel(code);renderPlayers()}
+$('joinBtn').onclick=()=>{const c=$('joinCode').value.trim().toUpperCase(),n=$('playerName').value.trim();if(c.length<4||!n){$('homeMsg').innerHTML='<div class="notice danger">Enter a game code and your name.</div>';return}role='player';player={id:crypto.randomUUID(),name:n,team:null};show('player');$('playerCode').textContent=c;$('playerWelcome').textContent='Welcome, '+n+'!';joinChannel(c)}
+document.querySelectorAll('[data-team]').forEach(b=>b.onclick=()=>{player.team=Number(b.dataset.team);$('teamPick').classList.add('hidden');$('playerWaiting').classList.remove('hidden');broadcast('player_join',{id:player.id,player});broadcast('player_team',{id:player.id,team:player.team})})
+$('startBtn').onclick=()=>{state.started=true;$('hostSetup').classList.add('hidden');$('hostGame').classList.remove('hidden');broadcast('state',{state,players});renderHostGame()}
+$('revealBtn').onclick=()=>$('guide').classList.toggle('hidden');
+$('startTimer').onclick=startTimer;
+$('score1').onclick=()=>addScore(1);$('score2').onclick=()=>addScore(2);
+$('resetBtn').onclick=()=>{broadcast('reset');location.reload()}
+</script>
+</body></html>
