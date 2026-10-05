@@ -1,0 +1,30 @@
+// Pick A Letter! — 26 challenges
+// Every completed challenge is worth exactly 5 points.
+const QUESTIONS={
+A:{difficulty:'Easy',prompt:'Name 5 animals that start with A.',answers:['Alligator','Alpaca','Ant','Antelope','Ape','Armadillo','Aardvark','Albatross']},
+B:{difficulty:'Easy',prompt:'Name 5 countries that start with B.',answers:['Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi']},
+C:{difficulty:'Easy',prompt:'Name 5 foods that start with C.',answers:['Cake','Carrot','Cheese','Chicken','Cereal','Cookie','Corn','Cabbage','Celery','Chili']},
+D:{difficulty:'Medium',prompt:'Name 5 occupations that start with D.',answers:['Doctor','Dentist','Designer','Driver','Detective','Developer','Dietitian','DJ']},
+E:{difficulty:'Medium',prompt:'Name 5 things found in a kitchen that start with E.',answers:['Egg','Eggplant','Espresso machine','Electric kettle','Egg beater','Enamel pot']},
+F:{difficulty:'Medium',prompt:'Name 5 famous people whose first name starts with F.',answers:['Frank Sinatra','Freddie Mercury','Frida Kahlo','Franklin D. Roosevelt','Florence Nightingale','Ferdinand Marcos']},
+G:{difficulty:'Easy',prompt:'Name 5 things you can find at the beach that start with G.',answers:['Goggles','Glasses','Grill','Gull','Garbage','Games','Gravel']},
+H:{difficulty:'Medium',prompt:'Name 5 household items that start with H.',answers:['Hanger','Hammer','Heater','Hairdryer','Hose','Humidifier','Hand vacuum']},
+I:{difficulty:'Hard',prompt:'Name 5 countries or places that start with I.',answers:['Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Isle of Man']},
+J:{difficulty:'Easy',prompt:'Name 5 jobs that start with J.',answers:['Journalist','Judge','Janitor','Jeweler','Jockey','Job coach']},
+K:{difficulty:'Medium',prompt:'Name 5 foods or drinks that start with K.',answers:['Kiwi','Kebab','Ketchup','Kimchi','Kale','Kefir','Kumquat','Kombucha']},
+L:{difficulty:'Easy',prompt:'Name 5 animals that start with L.',answers:['Lion','Leopard','Llama','Lemur','Lobster','Lizard','Lynx','Ladybug']},
+M:{difficulty:'Easy',prompt:'Name 5 countries that start with M.',answers:['Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands','Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar']},
+N:{difficulty:'Medium',prompt:'Name 5 things you might find in an office that start with N.',answers:['Notebook','Notepad','Name tag','Network','Notice board','Number pad']},
+O:{difficulty:'Medium',prompt:'Name 5 objects that start with O.',answers:['Oven','Orange','Ornament','Ottoman','Oar','Outlet','Odometer','Oven mitt']},
+P:{difficulty:'Easy',prompt:'Name 5 things you can buy at a grocery store that start with P.',answers:['Pasta','Potato','Pizza','Peanut butter','Popcorn','Pickles','Pineapple','Pork']},
+Q:{difficulty:'Hard',prompt:'Name 5 words that start with Q.',answers:['Queen','Question','Quick','Quiet','Quilt','Quarter','Quartz','Queue','Quiver','Quotation']},
+R:{difficulty:'Medium',prompt:'Name 5 things you might find in a restaurant that start with R.',answers:['Rice','Restaurant menu','Rug','Receipt','Refrigerator','Reservation','Roll','Ramekin']},
+S:{difficulty:'Easy',prompt:'Name 5 animals that start with S.',answers:['Snake','Shark','Sheep','Swan','Seal','Sloth','Snail','Squirrel','Salamander']},
+T:{difficulty:'Medium',prompt:'Name 5 things found in an office that start with T.',answers:['Telephone','Tablet','Tape','Trash can','Toner','Tray','Time clock']},
+U:{difficulty:'Hard',prompt:'Name 5 words that start with U.',answers:['Umbrella','Uniform','Universe','Unicorn','Uncle','Useful','Unique','Urgent','Underwater']},
+V:{difficulty:'Medium',prompt:'Name 5 things you can see in a city that start with V.',answers:['Van','Vehicle','Vending machine','Villa','Viaduct','Volunteer','Vegetation']},
+W:{difficulty:'Easy',prompt:'Name 5 countries or places that start with W.',answers:['Wales','Western Sahara','Wallis and Futuna','Washington','Wuhan','Warsaw','Wellington']},
+X:{difficulty:'Hard',prompt:'Name 5 words containing the letter X.',answers:['Box','Fox','Six','Taxi','Extra','Example','Exercise','Exciting','Maximum','Pixel']},
+Y:{difficulty:'Medium',prompt:'Name 5 foods or drinks that start with Y.',answers:['Yogurt','Yam','Yolk','Yuzu','Yellowtail','Yeast','Yakult']},
+Z:{difficulty:'Hard',prompt:'Name 5 animals or objects that start with Z.',answers:['Zebra','Zebu','Zucchini','Zipper','Zero','Zoo','Zombie','Zeppelin']}
+};
